@@ -1,4 +1,3 @@
-use git2::Repository;
 use anyhow::{Result, Context};
 use std::env;
 use std::fs;
@@ -14,18 +13,18 @@ pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
     if Path::new("/var/cache/state").exists() {
         fs::remove_dir_all("/var/cache/state")?;
     }
-    let repo = match builder.clone(url, Path::new("/var/cache/state")) {
+    let _repo = match builder.clone(url, Path::new("/var/cache/state")) {
         Ok(repo) => repo,
         Err(e) => panic!("failed to clone: {}", e),
     }; 
     let mut unknown = Vec::new();
     env::set_current_dir("/var/cache/state/").context("Directory does not exist, cloning failed")?;
-    let pkg: Vec<_> = fs::read_dir("/var/cache/state")?
+    let _pkg: Vec<_> = fs::read_dir("/var/cache/state")?
         .filter_map(|e| e.ok())
         .collect();
     let number = local.iter().count();
     println!("Package number {}", number);
-    for (name, version, release) in local.iter() {
+    for (name, _version, _release) in local.iter() {
             let info = WalkDir::new("/var/cache/state")
                 .into_iter()
                 .filter_map(|e| e.ok())
