@@ -1,3 +1,22 @@
+// Raw-fetch is a simple fetcher that looks at archlinux version of packages to know if yours are up to date or not.
+//    Copyright (C) 2026  Alexis/Delta-Azura
+
+//    This program is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+
+//    You should have received a copy of the GNU General Public License along
+//    with this program; if not, write to the Free Software Foundation, Inc.,
+//    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
+
 use anyhow::{Result, Context};
 use std::env;
 use std::fs;
@@ -31,13 +50,11 @@ pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
                 .filter_map(|e| e.ok())
                 .find(|e| e.file_name().to_str().unwrap_or("") == name);
             if let Some(entry) = info {
-                //println!("{:?}", entry);
                 let data = fs::read_to_string(entry.path())?;
                 //let data = data;
                 let name = data.split_once(" ").map(|(name, _)| name).context("FAILED TO GET PKGNAME")?;
                 let pkgver = data.split_once(name).map(|(_, ver)| ver).context("FAILED TO GET PKGVER")?.split_once(" ").map(|(_, pkgver)| pkgver).context("")?.split_once(" ").map(|(pkgver, _)| pkgver).context("FAILED TO GET PKGVER")?.split_once("-").map(|(pkgver, _)| pkgver).context("Failed to get pkgver")?;
                 let pkgrel = data.split_once(pkgver).map(|(_, ver)| ver).context("FAILED TO GET PKGREL")?.split_once("-").map(|(_, pkgrel)| pkgrel).context("")?.split_once(" ").map(|(pkgrel, _)| pkgrel).context("Failed")?;
-                println!("{} {} {}", name, pkgver, pkgrel);
                 if version != pkgver {
                     toupdate.push((name.to_string(), pkgver.to_string(), pkgrel.to_string()));
                 } else {
