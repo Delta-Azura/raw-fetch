@@ -56,17 +56,7 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
             //let path = format!("{}/{}", source, &i);
             println!("{}", path);
             let pkgfile = fs::read_to_string(&path).context("Failed to get pkgfile")?;
-            let mut name = String::new();
-            if !pkgfile.contains("name=") {
-                name = Path::new(&path)
-                    .parent()
-                    .and_then(|p| p.file_name())
-                    .and_then(|n| n.to_str())
-                    .context("Failed to get package name")?
-                    .to_string();
-            } else {
-                let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
-            }
+            let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
             let version = pkgfile.lines().find(|l| l.contains("version=")).context("Failed to get package version")?.split_once("version=").map(|(_, name)| name).context("Failed to get pkgver")?.to_string();
             let mut release = String::new();
             if pkgfile.contains("release=") {
@@ -113,17 +103,7 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
                 let path = format!("{}/{}", source, &path);
                 println!("{}", path);
                 let pkgfile = fs::read_to_string(&path).context("Failed to get pkgfile")?;
-                let mut name = String::new();
-                if !pkgfile.contains("name=") {
-                    name = Path::new(&path)
-                        .parent()
-                        .and_then(|p| p.file_name())
-                        .and_then(|n| n.to_str())
-                        .context("Failed to get package name")?
-                        .to_string();
-                } else {
-                    let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
-                }
+                let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
                 let version = pkgfile.lines().find(|l| l.contains("version=")).context("Failed to get package version")?.split_once("version=").map(|(_, name)| name).context("Failed to get pkgver")?.to_string();
                 let mut release = String::new();
                 if pkgfile.contains("release=") {
