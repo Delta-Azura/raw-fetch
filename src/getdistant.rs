@@ -30,7 +30,12 @@ pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
                 .filter_map(|e| e.ok())
                 .find(|e| e.file_name().to_str().unwrap_or("") == name);
             if let Some(entry) = info {
-                println!("{:?}", entry);
+                //println!("{:?}", entry);
+                let data = fs::read_to_string(entry.path())?;
+                let name = data.split_once(" ").map(|(name, _)| name).context("FAILED TO GET PKGNAME")?;
+                let pkgver = data.split_once(name).map(|(_, ver)| ver).context("FAILED TO GET PKGVER")?.split_once(" ").map(|(_, pkgver)| pkgver).context("")?.split_once(" ").map(|(pkgver, _)| pkgver).context("FAILED TO GET PKGVER")?;
+                let pkgrel = data.split_once("-").map(|(_, ver)| ver).context("FAILED TO GET PKGREL")?.split_once(" ").map(|(pkgrel, _)| pkgver).context("")?;
+                println!("{} {} {}", name, pkgver, pkgrel);
             } else {
                 unknown.push(name);
             }
