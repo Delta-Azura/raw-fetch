@@ -58,7 +58,12 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
             let pkgfile = fs::read_to_string(&path).context("Failed to get pkgfile")?;
             let mut name = String::new();
             if !pkgfile.contains("name=") {
-                name = path.split_once("/Pkgfile").map(|(name, _)| name).context("Failed to get package name")?.trim_end_matches("/").rsplit_once('/').map(|(_, name)| name).context("Failed")?.to_string();
+                name = Path::new(&path)
+                    .parent()
+                    .and_then(|p| p.file_name())
+                    .and_then(|n| n.to_str())
+                    .context("Failed to get package name")?
+                    .to_string();
             } else {
                 let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
             }
@@ -110,7 +115,12 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
                 let pkgfile = fs::read_to_string(&path).context("Failed to get pkgfile")?;
                 let mut name = String::new();
                 if !pkgfile.contains("name=") {
-                    name = path.split_once("/Pkgfile").map(|(name, _)| name).context("Failed to get package name")?.trim_end_matches("/").rsplit_once('/').map(|(_, name)| name).context("Failed")?.to_string();
+                    name = Path::new(&path)
+                        .parent()
+                        .and_then(|p| p.file_name())
+                        .and_then(|n| n.to_str())
+                        .context("Failed to get package name")?
+                        .to_string();
                 } else {
                     let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
                 }
