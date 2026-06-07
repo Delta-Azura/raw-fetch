@@ -26,9 +26,7 @@ pub fn getconf() -> Result<(Vec<(String, String, String)>)> {
         for i in index.lines() {
             let i = i.split_once("_").map(|(ls, _)| ls).context("Failed to split")?;
             let path = format!("{}/{}", source, &i);
-            println!("{}", path);
             let pkgfile = fs::read_to_string(path).context("Failed to get pkgfile")?;
-            println!("{}", pkgfile);
             let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
             let version = pkgfile.lines().find(|l| l.contains("version=")).context("Failed to get package version")?.split_once("version=").map(|(_, name)| name).context("Failed to get pkgver")?.to_string();
             let mut release = String::new();
