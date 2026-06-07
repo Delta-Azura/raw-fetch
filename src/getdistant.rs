@@ -44,22 +44,27 @@ pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
         .collect();
     let number = local.iter().count();
     println!("Package number {}", number);
+    let restricted = vec!["testing", "unstable", "multilib"];
     for (name, version, release) in local.iter() {
             let info = WalkDir::new("/var/cache/state")
                 .into_iter()
                 .filter_map(|e| e.ok())
                 .find(|e| e.file_name().to_str().unwrap_or("") == name);
             if let Some(entry) = info {
-                let data = fs::read_to_string(entry.path())?;
-                //let data = data;
-                let name = data.split_once(" ").map(|(name, _)| name).context("FAILED TO GET PKGNAME")?;
-                let pkgver = data.split_once(name).map(|(_, ver)| ver).context("FAILED TO GET PKGVER")?.split_once(" ").map(|(_, pkgver)| pkgver).context("")?.split_once(" ").map(|(pkgver, _)| pkgver).context("FAILED TO GET PKGVER")?.split_once("-").map(|(pkgver, _)| pkgver).context("Failed to get pkgver")?;
-                let pkgrel = data.split_once(pkgver).map(|(_, ver)| ver).context("FAILED TO GET PKGREL")?.split_once("-").map(|(_, pkgrel)| pkgrel).context("")?.split_once(" ").map(|(pkgrel, _)| pkgrel).context("Failed")?;
-                if version != pkgver {
-                    toupdate.push((name.to_string(), pkgver.to_string(), pkgrel.to_string()));
-                } else {
-                    if release != pkgrel {
+                let path = entry.path().to_str().unwrap_or("");
+
+                if !restricted.iter().any(|r| path.contains(r)) {
+                    let data = fs::read_to_string(entry.path())?;
+                    //let data = data;
+                    let name = data.split_once(" ").map(|(name, _)| name).context("FAILED TO GET PKGNAME")?;
+                    let pkgver = data.split_once(name).map(|(_, ver)| ver).context("FAILED TO GET PKGVER")?.split_once(" ").map(|(_, pkgver)| pkgver).context("")?.split_once(" ").map(|(pkgver, _)| pkgver).context("FAILED TO GET PKGVER")?.split_once("-").map(|(pkgver, _)| pkgver).context("Failed to get pkgver")?;
+                    let pkgrel = data.split_once(pkgver).map(|(_, ver)| ver).context("FAILED TO GET PKGREL")?.split_once("-").map(|(_, pkgrel)| pkgrel).context("")?.split_once(" ").map(|(pkgrel, _)| pkgrel).context("Failed")?;
+                    if version != pkgver {
                         toupdate.push((name.to_string(), pkgver.to_string(), pkgrel.to_string()));
+                    } else {
+                        if release != pkgrel {
+                            toupdate.push((name.to_string(), pkgver.to_string(), pkgrel.to_string()));
+                        }
                     }
                 }
             } else {
