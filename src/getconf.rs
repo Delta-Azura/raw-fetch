@@ -86,8 +86,8 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
             let index = fs::read_to_string(index)?;
             let mut localdata = Vec::new();
             for i in index.lines() {
-                if i.matches("__").count() > 0 {
-                    let mut parts = i.splitn(2, "__");
+                if i.matches("_").count() > 1 {
+                    let mut parts = i.splitn(2, "_");
                     let i = parts.nth(0).context("Failed to split")?;
                 } else {
                     let i = i.split_once("_").map(|(ls, _)| ls).context("Failed to split")?;
