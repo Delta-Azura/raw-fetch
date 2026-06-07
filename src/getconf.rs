@@ -55,8 +55,13 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
         
             //let path = format!("{}/{}", source, &i);
             println!("{}", path);
-            let pkgfile = fs::read_to_string(path).context("Failed to get pkgfile")?;
-            let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
+            let pkgfile = fs::read_to_string(&path).context("Failed to get pkgfile")?;
+            let mut name = String::new();
+            if !pkgfile.contains("name=") {
+                name = path.split_once("/Pkgfile").map(|(name, _)| name).context("Failed to get package name")?.trim_end_matches("/").rsplit_once('/').map(|(_, name)| name).context("Failed")?.to_string();
+            } else {
+                let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
+            }
             let version = pkgfile.lines().find(|l| l.contains("version=")).context("Failed to get package version")?.split_once("version=").map(|(_, name)| name).context("Failed to get pkgver")?.to_string();
             let mut release = String::new();
             if pkgfile.contains("release=") {
@@ -102,8 +107,13 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
                 //let i = i.split_once("_").map(|(ls, _)| ls).context("Failed to split")?;
                 let path = format!("{}/{}", source, &path);
                 println!("{}", path);
-                let pkgfile = fs::read_to_string(path).context("Failed to get pkgfile")?;
-                let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
+                let pkgfile = fs::read_to_string(&path).context("Failed to get pkgfile")?;
+                let mut name = String::new();
+                if !pkgfile.contains("name=") {
+                    name = path.split_once("/Pkgfile").map(|(name, _)| name).context("Failed to get package name")?.trim_end_matches("/").rsplit_once('/').map(|(_, name)| name).context("Failed")?.to_string();
+                } else {
+                    let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
+                }
                 let version = pkgfile.lines().find(|l| l.contains("version=")).context("Failed to get package version")?.split_once("version=").map(|(_, name)| name).context("Failed to get pkgver")?.to_string();
                 let mut release = String::new();
                 if pkgfile.contains("release=") {
