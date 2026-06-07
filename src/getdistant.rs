@@ -17,14 +17,15 @@ pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
         Ok(repo) => repo,
         Err(e) => panic!("failed to clone: {}", e),
     }; 
-    let mut unknown = Vec::new();
+    let mut unknown: Vec<String> = Vec::new();
+    let mut toupdate: Vec<(String, String, String)> = Vec::new();
     env::set_current_dir("/var/cache/state/").context("Directory does not exist, cloning failed")?;
     let _pkg: Vec<_> = fs::read_dir("/var/cache/state")?
         .filter_map(|e| e.ok())
         .collect();
     let number = local.iter().count();
     println!("Package number {}", number);
-    for (name, _version, _release) in local.iter() {
+    for (name, version, release) in local.iter() {
             let info = WalkDir::new("/var/cache/state")
                 .into_iter()
                 .filter_map(|e| e.ok())
@@ -32,16 +33,25 @@ pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
             if let Some(entry) = info {
                 //println!("{:?}", entry);
                 let data = fs::read_to_string(entry.path())?;
+                //let data = data;
                 let name = data.split_once(" ").map(|(name, _)| name).context("FAILED TO GET PKGNAME")?;
                 let pkgver = data.split_once(name).map(|(_, ver)| ver).context("FAILED TO GET PKGVER")?.split_once(" ").map(|(_, pkgver)| pkgver).context("")?.split_once(" ").map(|(pkgver, _)| pkgver).context("FAILED TO GET PKGVER")?.split_once("-").map(|(pkgver, _)| pkgver).context("Failed to get pkgver")?;
                 let pkgrel = data.split_once(pkgver).map(|(_, ver)| ver).context("FAILED TO GET PKGREL")?.split_once("-").map(|(_, pkgrel)| pkgrel).context("")?.split_once(" ").map(|(pkgrel, _)| pkgrel).context("Failed")?;
                 println!("{} {} {}", name, pkgver, pkgrel);
+                if version != pkgver {
+                    toupdate.push((name.to_string(), pkgver.to_string(), pkgrel.to_string()));
+                } else {
+                    if release != pkgrel {
+                        toupdate.push((name.to_string(), pkgver.to_string(), pkgrel.to_string()));
+                    }
+                }
             } else {
-                unknown.push(name);
+                unknown.push(name.to_string());
             }
     }
     let number = unknown.iter().count();
     println!("Unknown packages :  {}", number);
+    println!("Packages to update : {:?}", toupdate);
     Ok(())
 
 }
