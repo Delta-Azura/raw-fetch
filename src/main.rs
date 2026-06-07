@@ -1,6 +1,7 @@
 mod getconf;
+mod getdistant;
 use getconf::getconf;
-use anyhow::{Result, Context};
+use anyhow::Result;
 
 fn main() -> Result<()> {
     println!("Hello, world!");
