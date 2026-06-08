@@ -15,7 +15,7 @@ kernel=linux
 alexis [ ~ ]$
 ```
 # Why ? 
-I want to make the raw ecosystem as simple as possible to heavily simplify the packager life, every aspect of the project has to be clearly documented and fully compatible with the latest version of every modules.
+I want to make the raw ecosystem as simple as possible to heavily simplify the packagers life, every aspect of the project has to be clearly documented and fully compatible with the latest version of every modules.
 
 A fetcher is a must for every rolling distro to keep up with the rythm of releases, and which better reference than archlinux for that.....
 
