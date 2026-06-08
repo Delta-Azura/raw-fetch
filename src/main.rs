@@ -18,6 +18,7 @@
 
 mod getconf;
 mod getdistant;
+mod r#match;
 use getconf::getconf;
 use anyhow::Result;
 

@@ -22,6 +22,7 @@ use std::env;
 use std::fs;
 use std::path::Path;
 use walkdir::WalkDir;
+use crate::r#match::compare;
 
 pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
     let url = "https://gitlab.archlinux.org/archlinux/packaging/state.git";
@@ -46,33 +47,38 @@ pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
     println!("Package number {}", number);
     let restricted = vec!["testing", "unstable", "multilib"];
     for (name, version, release) in local.iter() {
-            let info = WalkDir::new("/var/cache/state")
-                .into_iter()
-                .filter_map(|e| e.ok())
-                .find(|e| e.file_name().to_str().unwrap_or("") == name);
-            if let Some(entry) = info {
-                let path = entry.path().to_str().unwrap_or("");
+        let (value, result) = compare(name)?;
+        let name = if result || value != "none" {
+            value
+        } else { name.to_string() };
+        let info = WalkDir::new("/var/cache/state")
+            .into_iter()
+            .filter_map(|e| e.ok())
+            .find(|e| e.file_name().to_str().unwrap_or("") == name);
+        if let Some(entry) = info {
+            let path = entry.path().to_str().unwrap_or("");
 
-                if !restricted.iter().any(|r| path.contains(r)) {
-                    let data = fs::read_to_string(entry.path())?;
-                    //let data = data;
-                    let name = data.split_once(" ").map(|(name, _)| name).context("FAILED TO GET PKGNAME")?;
-                    let pkgver = data.split_once(name).map(|(_, ver)| ver).context("FAILED TO GET PKGVER")?.split_once(" ").map(|(_, pkgver)| pkgver).context("")?.split_once(" ").map(|(pkgver, _)| pkgver).context("FAILED TO GET PKGVER")?.split_once("-").map(|(pkgver, _)| pkgver).context("Failed to get pkgver")?;
-                    let pkgrel = data.split_once(pkgver).map(|(_, ver)| ver).context("FAILED TO GET PKGREL")?.split_once("-").map(|(_, pkgrel)| pkgrel).context("")?.split_once(" ").map(|(pkgrel, _)| pkgrel).context("Failed")?;
-                    if version != pkgver {
+            if !restricted.iter().any(|r| path.contains(r)) {
+                let data = fs::read_to_string(entry.path())?;
+                //let data = data;
+                let name = data.split_once(" ").map(|(name, _)| name).context("FAILED TO GET PKGNAME")?;
+                let pkgver = data.split_once(name).map(|(_, ver)| ver).context("FAILED TO GET PKGVER")?.split_once(" ").map(|(_, pkgver)| pkgver).context("")?.split_once(" ").map(|(pkgver, _)| pkgver).context("FAILED TO GET PKGVER")?.split_once("-").map(|(pkgver, _)| pkgver).context("Failed to get pkgver")?;
+                let pkgrel = data.split_once(pkgver).map(|(_, ver)| ver).context("FAILED TO GET PKGREL")?.split_once("-").map(|(_, pkgrel)| pkgrel).context("")?.split_once(" ").map(|(pkgrel, _)| pkgrel).context("Failed")?;
+                if version != pkgver {
+                    toupdate.push((name.to_string(), pkgver.to_string(), pkgrel.to_string()));
+                } else {
+                    if release != pkgrel {
                         toupdate.push((name.to_string(), pkgver.to_string(), pkgrel.to_string()));
-                    } else {
-                        if release != pkgrel {
-                            toupdate.push((name.to_string(), pkgver.to_string(), pkgrel.to_string()));
-                        }
                     }
                 }
-            } else {
-                unknown.push(name.to_string());
             }
+        } else {
+            unknown.push(name.to_string());
+        }
     }
     let number = unknown.iter().count();
     println!("Unknown packages :  {}", number);
+    println!("Unknown packages : {:?}", unknown);
     println!("Packages to update : {:?}", toupdate);
     Ok(())
 
