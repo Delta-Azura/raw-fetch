@@ -18,3 +18,26 @@ alexis [ ~ ]$
 I want to make the raw ecosystem as simple as possible to heavily simplify the packager life, every aspect of the project has to be clearly documented and fully compatible with the latest version of every modules.
 
 A fetcher is a must for every rolling distro to keep up with the rythm of releases, and which better reference than archlinux for that.....
+
+
+
+# Qu'est-ce que raw-fetch
+Raw-fetch est un outil de l'écosystème du gestionnaire de paquets raw.
+C'est une tentative de réécriture du script obsolète de GREAT-OS que vous pouvez retrouver ici : <https://git.great-os.org/Great-OS/scripts/src/branch/main/outdated> ou ici : <https://github.com/Delta-Azura/onyx/scripts/outdated>.
+
+L'objectif principal est d'être bien plus rapide pour les grandes bases de données de paquets.
+
+# Fonctionnalités
+Raw-fetch nécessite un index raw configuré avec raw (sa dernière version), il téléchargera ensuite l'état des paquets d'Arch Linux en ne récupérant que les derniers commits de chaque paquet, puis analysera le nom, la release et la version de ces paquets.
+Il gère les correspondances entre vos paquets et ceux d'Arch.
+Vous devrez les configurer ainsi, si ce fichier n'est pas initialisé il ignorera simplement les paquets inconnus et affichera leur liste :
+```bash
+alexis [ ~ ]$ cat /etc/raw-fetch
+gnome-web=epiphany
+kernel=linux
+alexis [ ~ ]$
+```
+# Pourquoi ?
+Je veux rendre l'écosystème raw aussi simple que possible afin de faciliter au maximum la vie du packageur, chaque aspect du projet doit être clairement documenté et pleinement compatible avec la dernière version de chaque module.
+
+Un fetcher est indispensable pour toute distro rolling afin de suivre le rythme des sorties, et quelle meilleure référence qu'Arch Linux pour ça.....
