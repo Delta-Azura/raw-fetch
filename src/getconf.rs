@@ -43,18 +43,8 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
         let mut localdata = Vec::new();
         let mut path = String::new();
         for i in index.lines() {
-            if i.matches("_").count() > 1 {
-                let pos = i.rfind('_').unwrap();
-                path = i[..pos].to_string();
-                //path = parts.next(1).context("Failed to split")?.to_string();
-            } else {
-                path = i.split_once("_").map(|(ls, _)| ls).context("Failed to split")?.to_string();
-            }
-            //let i = i.split_once("_").map(|(ls, _)| ls).context("Failed to split")?;
+            path = i.split_once("_").map(|(ls, _)| ls).context("Failed to split")?.to_string();
             let path = format!("{}/{}", source, &path);
-        
-            //let path = format!("{}/{}", source, &i);
-            println!("{}", path);
             let pkgfile = fs::read_to_string(&path).context("Failed to get pkgfile")?;
             let name = pkgfile.lines().find(|l| l.contains("name=")).context("Failed to get package name")?.split_once("name=").map(|(_, name)| name).context("Failed to get pkgname")?;
             let version = pkgfile.lines().find(|l| l.contains("version=")).context("Failed to get package version")?.split_once("version=").map(|(_, name)| name).context("Failed to get pkgver")?.to_string();
@@ -92,14 +82,7 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
             let mut localdata = Vec::new();
             let mut path = String::new();
             for i in index.lines() {
-                if i.matches("_").count() > 1 {
-                    let pos = i.rfind('_').unwrap();
-                    path = i[..pos].to_string();
-                    //path = parts.next(1).context("Failed to split")?.to_string();
-                } else {
-                    path = i.split_once("_").map(|(ls, _)| ls).context("Failed to split")?.to_string();
-                }
-                //let i = i.split_once("_").map(|(ls, _)| ls).context("Failed to split")?;
+                path = i.split_once("|").map(|(ls, _)| ls).context("Failed to split")?.to_string();
                 let path = format!("{}/{}", source, &path);
                 println!("{}", path);
                 let pkgfile = fs::read_to_string(&path).context("Failed to get pkgfile")?;
