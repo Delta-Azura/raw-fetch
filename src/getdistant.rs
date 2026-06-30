@@ -24,7 +24,7 @@ use std::path::Path;
 use walkdir::WalkDir;
 use crate::r#match::compare;
 
-pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
+pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<(Vec<(String, String, String)>)> {
     let url = "https://gitlab.archlinux.org/archlinux/packaging/state.git";
     let mut opt = git2::FetchOptions::new();
     opt.depth(1);
@@ -80,6 +80,6 @@ pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<()> {
     println!("Unknown packages :  {}", number);
     println!("Unknown packages : {:?}", unknown);
     println!("Packages to update : {:?}", toupdate);
-    Ok(())
+    Ok(toupdate)
 
 }

@@ -3,6 +3,15 @@ name = "raw-fetch"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "raw"
+path = "src/main.rs"
+
+[lib]
+name = "raw"
+path = "src/lib.rs"
+
+
 [dependencies]
 anyhow = "1.0"
 git2 = { version = "0.21.0", features = ["https"] }
