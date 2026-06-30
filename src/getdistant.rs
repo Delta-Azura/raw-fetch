@@ -23,8 +23,10 @@ use std::fs;
 use std::path::Path;
 use walkdir::WalkDir;
 use crate::r#match::compare;
+use crate::getconf::getconf;
 
-pub fn getdistant(local: &Vec<(String, String, String)>) -> Result<(Vec<(String, String, String)>)> {
+pub fn getdistant() -> Result<(Vec<(String, String, String)>)> {
+    let local = getconf()?;
     let url = "https://gitlab.archlinux.org/archlinux/packaging/state.git";
     let mut opt = git2::FetchOptions::new();
     opt.depth(1);

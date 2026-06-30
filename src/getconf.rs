@@ -20,7 +20,7 @@ use std::fs;
 use anyhow::{Result, Context};
 use crate::getdistant::getdistant;
 
-pub fn getconf() -> Result<Vec<(String, String, String)> > {
+pub fn getconf() -> Result<Vec<(String, String, String)>> {
     if !Path::new("/etc/raw.conf").exists() {
         println!("Raw.conf doesn't exists aborting");
         std::process::exit(1)
@@ -57,7 +57,6 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
             localdata.push((name.to_string(), version.to_string(), release.to_string()));
         }
         println!("{:?}", localdata);
-        getdistant(&localdata)?;
         return Ok(localdata);
     } else {        
         if !Path::new("/etc/raw.conf").exists() {
@@ -97,7 +96,6 @@ pub fn getconf() -> Result<Vec<(String, String, String)> > {
                 localdata.push((name.to_string(), version.to_string(), release.to_string()));
             }
             println!("{:?}", localdata);
-            getdistant(&localdata)?;
             return Ok(localdata);
         } else {
             anyhow::bail!("Unsupported or missing mode in raw.conf");

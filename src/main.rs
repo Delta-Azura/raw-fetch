@@ -19,11 +19,11 @@
 mod getconf;
 mod getdistant;
 mod r#match;
-use getconf::getconf;
 use anyhow::Result;
+use crate::getdistant::getdistant;
 
 fn main() -> Result<()> {
     println!("Hello, world!");
-    getconf()?;
+    getdistant()?;
     Ok(())
 }
